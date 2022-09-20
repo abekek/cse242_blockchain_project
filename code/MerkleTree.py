@@ -1,8 +1,5 @@
 import hashlib
 
-# hashed_string = hashlib.sha256(input_string.encode('utf-8')).hexdigest()
-# hexdigest() which is used to convert our data into hexadecimal format
-
 class MerkleTree:
 
     class Node:
@@ -27,7 +24,6 @@ class MerkleTree:
         # get a list of leaves
         leaf_nodes = []
         for idx, leaf in enumerate(leaves):
-            print("idx: " + str(idx)  + " " + leaf[0] + " " + leaf[1])
             node = self.Node()
             node.left = None
             node.right = None
