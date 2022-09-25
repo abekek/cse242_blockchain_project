@@ -56,3 +56,15 @@ class MerkleTree:
     # function to get the root
     def get_root(self):
         return self.root.hash_value
+
+    # function to print the contents of the tree
+    def print(self):
+        self.print_helper(self.root, 0)
+    
+    # helper print function
+    def print_helper(self, node, level):
+        if node == None:
+            return
+        self.print_helper(node.right, level + 1)
+        print(node.hash_value)
+        self.print_helper(node.left, level + 1)
