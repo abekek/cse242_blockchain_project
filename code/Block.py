@@ -23,9 +23,9 @@ class Block:
             self.nonce = 0
 
         def hash(self):
-            self.hash_header = hashlib.sha256((
+            return hashlib.sha256((
                 str(self.hash_prev) + 
-                str(self.hash_root) +
+                str(self.hash_root.get_root()) +
                 str(self.timestamp) + 
                 str(self.target) + 
                 str(self.nonce)).encode('utf-8')).hexdigest()
@@ -40,23 +40,24 @@ class Block:
                     break
                 else:
                     curr_nonce = random.randint(0, 2**64)
-            print(tries)
+            # print(tries)
 
         def get_nonce(self):
             return self.nonce
 
     # function to print the block
     def print(self, printLedger):
-        print("BEGIN BLOCK")
-        print("BEGIN HEADER")
-        print(self.header.hash_prev)
-        print(self.header.hash_root)
-        print(self.header.timestamp)
-        print(self.header.target)
-        print(self.header.nonce)
-        print("END HEADER")
+        res = ""
+        res+="BEGIN BLOCK\n"
+        res+="BEGIN HEADER\n"
+        res+= 'Hash of the previous block: {}\n'.format(self.header.hash_prev)
+        res+= 'Merkle Tree root: {}\n'.format(self.header.hash_root.get_root())
+        res+= 'Timestamp: {}\n'.format(self.header.timestamp)
+        res+= 'Target: {}\n'.format(self.header.target)
+        res+= 'Nonce: {}\n'.format(self.header.nonce)
+        res+= "END HEADER\n"
         if printLedger:
-            self.hash_root.print()
-        print("END BLOCK")
-        print("")
+            res += self.header.hash_root.print()
+        res+= "END BLOCK\n\n"
+        return res
     

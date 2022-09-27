@@ -14,6 +14,6 @@ for num_block in range(num_blocks):
         data.append((row, balance))
 
     # put the data into a txt file
-    with open(f'datagen_{num_block}.txt', 'w+') as f:
+    with open(f'code/datagen_{num_block}.txt', 'w+') as f:
         for row, balance in data:
             f.write(f'{row} {balance}\n')

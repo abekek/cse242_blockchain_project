@@ -66,5 +66,6 @@ class MerkleTree:
         if node == None:
             return
         self.print_helper(node.right, level + 1)
-        print(node.hash_value)
+        if node.address != None:
+            print(str(node.address) + " " + str(node.balance))
         self.print_helper(node.left, level + 1)
