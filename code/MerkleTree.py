@@ -59,13 +59,17 @@ class MerkleTree:
 
     # function to print the contents of the tree
     def print(self):
-        self.print_helper(self.root, 0)
+        return self.print_helper(self.root, 0, "")
     
     # helper print function
-    def print_helper(self, node, level):
+    def print_helper(self, node, level, res):
         if node == None:
-            return
-        self.print_helper(node.right, level + 1)
+            return ""
+        return self.print_helper(node.right, level + 1, res) + self.getStr(node) + self.print_helper(node.left, level + 1, res)
+        
+    
+    def getStr(self, node):
         if node.address != None:
-            print(str(node.address) + " " + str(node.balance))
-        self.print_helper(node.left, level + 1)
+            return str(node.address) + " " + str(node.balance) + "\n"
+        else:
+            return ""

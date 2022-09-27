@@ -75,5 +75,5 @@ for fa in txt_files:
 
 for i in range(len(blocks)):
     # write to file 
-    with open(f'output/{filenames[i]}.block.out', 'w') as f:
+    with open(f'output/{filenames[i][:-4]}.block.out', 'w') as f:
         f.write(blocks[i].print(True))
