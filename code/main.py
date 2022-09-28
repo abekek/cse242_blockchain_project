@@ -1,17 +1,43 @@
 import os
 import sys
+import zipfile
+import glob
 
 from MerkleTree import MerkleTree
 from Block import Block
 
 txt_files = []
 files = []
+blocks = []
+filenames = []
+
+files = glob.glob('/output/*')
+for f in files:
+    os.remove(f)
+
+def handle_filecontent(file_content):
+    if not file_content:
+        print('File is empty')
+        sys.exit()
+    file_content = [line.split() for line in file_content.splitlines()]
+    merkle_tree = MerkleTree(file_content)
+    if len(blocks) == 0:
+        block = Block(0, merkle_tree)
+        block.header.set_nonce()
+        block.hash_header = block.header.hash()
+        blocks.append(block)
+    else:
+        block = Block(blocks[-1].hash_header, merkle_tree)
+        block.header.set_nonce()
+        block.hash_header = block.header.hash()
+        blocks.append(block)
 
 print("Choose an option:")
 print("1. Input file names")
 print("2. Input folder name (all files in folder will be used)")
+print("3. Zip file")
 
-user_input = input("Enter 1 or 2: ")
+user_input = input("Enter 1, 2 or 3: ")
 
 if user_input == "1":
     # get all files in root directory
@@ -41,11 +67,17 @@ elif user_input == "2":
     files_inputed = files
     # get all files with .txt extension
     txt_files = [file for file in files if file.endswith('.txt')]
+elif user_input == "3":
+    # handle zip file
+    zipfile_name = input("Enter Zip file name (example: file.zip): ")
+    file = zipfile.ZipFile(zipfile_name, "r")
+    for name in file.namelist():
+        if(name.endswith(".txt")):
+            data = file.read(name)
+            handle_filecontent(data.decode('utf-8'))
+            filenames.append(name)
 else:
     sys.exit(0)
-
-blocks = []
-filenames = []
 
 for fa in txt_files:
     if fa in files_inputed:
@@ -54,24 +86,14 @@ for fa in txt_files:
             # read file
             file_content = f.read()
             #if file_content is empty
-            if not file_content:
-                print('File is empty')
-                sys.exit()
-            file_content = [line.split() for line in file_content.splitlines()]
-            merkle_tree = MerkleTree(file_content)
-            if len(blocks) == 0:
-                block = Block(0, merkle_tree)
-                block.header.set_nonce()
-                block.hash_header = block.header.hash()
-                blocks.append(block)
-            else:
-                block = Block(blocks[-1].hash_header, merkle_tree)
-                block.header.set_nonce()
-                block.hash_header = block.header.hash()
-                blocks.append(block)
+            handle_filecontent(file_content)
+            # append file name
             filenames.append(fa)
     else:
-        print(f'File {fa} was not found')  
+        print(f'File {fa} was not found')
+
+# Change back to parent 
+os.chdir(os.getcwd())
 
 for i in range(len(blocks)):
     # write to file 
