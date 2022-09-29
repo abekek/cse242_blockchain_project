@@ -1,4 +1,4 @@
-### 1 General Description
+## 1 General Description
 This assignment is one part of a multi-part project to build some simplified components of the Ethereum
 blockchain. The first task is to build a data structure that can store addresses (accounts) and their balances
 on the chain. Its most important property is that validation of information should be efficient and relatively
@@ -17,7 +17,7 @@ We shall be using the sunlab as our test environment so that we have a common, s
 may develop on your own machines, but in the end, you’ll need to test in the sunlab. Obviously, this means
 that you are restricted to use programming languages supported in the default sunlab environment.
 The project will be done in groups (see Section 5). The groups will persist for future assignments.
-###### 2 Details
+## 2 Details
 
 #### 2.1 Input
 You shall prompt for a file name containing the input. The format of the input file is plain text (i.e., a

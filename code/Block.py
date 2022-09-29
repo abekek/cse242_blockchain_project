@@ -1,5 +1,4 @@
 # https://stackoverflow.com/questions/72411835/how-to-correctly-do-a-double-sha256-hashing
-# https://github.com/howCodeORG/Simple-Python-Blockchain/blob/master/blockchain.py
 
 from datetime import datetime
 import hashlib
