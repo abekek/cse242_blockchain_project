@@ -6,10 +6,10 @@ import string
 
 class Validate:
     def __init__(self, blocks, num_bad_entities):
-        self.addresses = {}
         self.blocks = blocks
         self.num_bad_entities = num_bad_entities
         self.bad_blocks = self.generate_bad_blocks()
+        self.addresses = self.save_addresses()
 
     # HW 5: 2.3
     def generate_bad_blocks(self):
@@ -58,11 +58,13 @@ class Validate:
         for i, block in enumerate(self.blocks):
             leaves = block.header.hash_root.traverse_tree()
             for leaf in leaves:
-                addresses[leaf.address] = i
+                addresses[leaf.address] = (i, int(leaf.balance))
         return addresses
 
-    def balance(self):
-        pass
+    def balance(self, key_address):
+        if key_address in self.addresses:
+            return self.addresses[key_address][1], True
+        return -1, False
 
     # HW5: 2.2
     def validate_block(self, block):

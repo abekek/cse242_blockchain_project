@@ -104,13 +104,15 @@ for i in range(len(blocks)):
 
 # validation of the blockchain
 num_bad_entities = 100
-good_validation = Validate(blocks, num_bad_entities)
-bad_blocks = good_validation.generate_bad_blocks()
+validation = Validate(blocks, num_bad_entities)
+bad_blocks = validation.generate_bad_blocks()
 
 for i in range(len(bad_blocks)):
     # write to file 
     with open(f'output/{filenames[i][:-4]}.bad_block.out', 'w') as f:
         f.write(bad_blocks[i].print(True))
+
+print(validation.balance('de0acd701ed59eb60ccbf38de33a2f5f91e6cde0'))
 
 # print out the traversed tree for first block
 # print(blocks[0].header.hash_root.traverse_tree())

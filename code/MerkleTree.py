@@ -17,7 +17,7 @@ class MerkleTree:
 
     # function to create a node
     def __init__(self, leaves):
-        self.root = self.build_tree(leaves) #type: Node
+        self.root = self.build_tree(leaves)
 
     # function to build the tree
     def build_tree(self, leaves):
@@ -76,7 +76,7 @@ class MerkleTree:
         if node == None:
             return
         self.traverse_tree_helper(node.left, l)
-        if node.balance:
+        if node.balance != None:
             l.append(node)
         self.traverse_tree_helper(node.right, l)
 
