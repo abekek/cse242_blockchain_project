@@ -5,6 +5,7 @@ import glob
 
 from MerkleTree import MerkleTree
 from Block import Block
+from Validation import Validate
 # from Validation import generate_bad_blocks, validate_blockchain
 
 txt_files = []
@@ -102,15 +103,15 @@ for i in range(len(blocks)):
         f.write(blocks[i].print(True))
 
 # validation of the blockchain
+num_bad_entities = 100
+good_validation = Validate(blocks, num_bad_entities)
+bad_blocks = good_validation.generate_bad_blocks()
 
-# validate each block in the blockchain
-# validate_blockchain(blocks)
-
-# validate each block of the bad blockchain
-# bad_blocks = blocks.copy()
-# num_bad_entities = 50
-# generate_bad_blocks(bad_blocks, num_bad_entities)
+for i in range(len(bad_blocks)):
+    # write to file 
+    with open(f'output/{filenames[i][:-4]}.bad_block.out', 'w') as f:
+        f.write(bad_blocks[i].print(True))
 
 # print out the traversed tree for first block
-print(blocks[0].header.hash_root.traverse_tree())
+# print(blocks[0].header.hash_root.traverse_tree())
 

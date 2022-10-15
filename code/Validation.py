@@ -8,12 +8,14 @@ class Validate:
     def __init__(self, blocks, num_bad_entities):
         self.addresses = {}
         self.blocks = blocks
-        self.bad_blocks = self.generate_bad_blocks(num_bad_entities)
+        self.num_bad_entities = num_bad_entities
+        self.bad_blocks = self.generate_bad_blocks()
 
-    def generate_bad_blocks(self, num_bad_entities):
+    # HW 5: 2.3
+    def generate_bad_blocks(self):
         bad_blocks = self.blocks.copy()
-        for _ in range(num_bad_entities):
-            # choose a random
+        for _ in range(self.num_bad_entities):
+            # choose a random block to make bad
             rnd_block_idx = random.randint(0, len(bad_blocks) - 1)
             rnd_block = bad_blocks[rnd_block_idx]
             # choose a random bad action
@@ -22,31 +24,33 @@ class Validate:
                 # put the random hash in the block hash
                 rnd_block.hash_header = ''.join(random.choices(string.hexdigits, k=40)).lower()
             elif rnd_action == 1:
-                # change the timestamp
+                # change the timestamp of a header in a block
                 rnd_block.header.timestamp = random.randint(0, 100000000)
             elif rnd_action == 2:
-                # change the node of the merkle tree
-                level_idx = random.randint(1, 8)
+                # choose whether to change the address or the balance
                 address_or_balance = random.randint(0, 1)
                 if address_or_balance == 0:
-                    self.change_node(rnd_block.header.hash_root.root, level_idx, random.randint(0, 100000000))
+                    # change the balance of a leaf node
+                    self.change_node(rnd_block.header.hash_root.root, random.randint(0, 100000000))
                 else:
-                    self.change_node(rnd_block.header.hash_root.root, level_idx, ''.join(random.choices(string.hexdigits, k=40)).lower())
+                    # change the address of a leaf node
+                    self.change_node(rnd_block.header.hash_root.root, ''.join(random.choices(string.hexdigits, k=40)).lower())
 
         return bad_blocks
 
-    def change_node(self, node, level_idx, val_new):
-        if level_idx == 0:
-            if val_new.isnumeric():
+    # HW 5: 2.3
+    def change_node(self, node, val_new):
+        if node.left == None or node.right == None:
+            if type(val_new) == int:
                 node.balance = val_new
             else:
                 node.address = val_new
         else:
             left_or_right = random.randint(0, 1)
             if left_or_right == 0:
-                self.change_node(node.left, level_idx - 1)
+                self.change_node(node.left, val_new)
             else:
-                self.change_node(node.right, level_idx - 1)
+                self.change_node(node.right, val_new)
 
     def save_addresses(self):
         addresses = {}
