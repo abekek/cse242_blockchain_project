@@ -9,12 +9,16 @@ class Validate:
     def __init__(self, blocks, num_bad_entities):
         self.blocks = blocks
         self.num_bad_entities = num_bad_entities
-        # self.bad_blocks = self.generate_bad_blocks()
+        self.bad_blocks = self.generate_bad_blocks()
         self.addresses = self.save_addresses()
 
     # HW 5: 2.3
     def generate_bad_blocks(self):
-        # bad_blocks = self.blocks.copy.deepcopy()
+        bad_blocks = []
+
+        for i in range(len(self.blocks)):
+            bad_blocks.append(copy.deepcopy(self.blocks[i]))
+
         for _ in range(self.num_bad_entities):
             # choose a random block to make bad
             rnd_block_idx = random.randint(0, len(bad_blocks) - 1)
@@ -103,5 +107,5 @@ class Validate:
         else:
             return self.__validate_block(blocks[index], index, blocks) and self.__validate_recursively(self.blocks, index-1)
 
-    def validate_blockchain(self):
-        return self.__validate_recursively(self.blocks, len(self.blocks)-1)
+    def validate_blockchain(self, blocks):
+        return self.__validate_recursively(blocks, len(blocks)-1)

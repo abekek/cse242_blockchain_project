@@ -6,7 +6,6 @@ import glob
 from MerkleTree import MerkleTree
 from Block import Block
 from Validation import Validate
-# from Validation import generate_bad_blocks, validate_blockchain
 
 txt_files = []
 files = []
@@ -29,7 +28,6 @@ def handle_filecontent(file_content):
         block.hash_header = block.header.hash()
         blocks.append(block)
     else:
-        print(len(blocks[-1].hash_header))
         block = Block(blocks[-1].hash_header, merkle_tree)
         block.header.set_nonce()
         block.hash_header = block.header.hash()
@@ -106,21 +104,9 @@ for i in range(len(blocks)):
 # validation of the blockchain
 num_bad_entities = 100
 validation = Validate(blocks, num_bad_entities)
-# bad_blocks = validation.generate_bad_blocks()
-
-#for i in range(len(bad_blocks)):
-    # write to file 
- #   with open(f'output/{filenames[i][:-4]}.bad_block.out', 'w') as f:
- #       f.write(bad_blocks[i].print(True))
 
 print(validation.balance('de0acd701ed59eb60ccbf38de33a2f5f91e6cde0'))
-print(validation.validate_blockchain())
+print('Good blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
 
-# print out the traversed tree for first block
-# print(blocks[0].header.hash_root.traverse_tree())
-
-# print(blocks[0].get_hash())
-# print(blocks[0].hash_header)
-# print(blocks[1].header.hash_prev)
-# print(blocks[7].hash_header)
-# print(len(blocks[7].hash_header))
+bad_blocks = validation.bad_blocks
+print('Bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
