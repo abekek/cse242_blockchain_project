@@ -84,11 +84,13 @@ class Validate:
             return False
         return True
         
-    def validate_recursively(self, block):
-        if block.hash_prev == None:
-            return self.validate_block(block)
-        # else:
-        #     return validate_block(block) and 
+    def validate_recursively(self, blocks, index):
+        if index == -1:
+            return False
+        if index == 0:
+            return self.validate_block(blocks[index])
+        else:
+            return self.validate_block(blocks[index]) and self.validate_recursively(self.blocks, index-1)
 
     def validate_blockchain(self):
-        return self.validate_recursively(self.blocks[-1])
+        return self.validate_recursively(self.blocks, len(self.blocks)-1)
