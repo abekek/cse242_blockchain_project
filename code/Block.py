@@ -4,6 +4,8 @@ from datetime import datetime
 import hashlib
 import random
 
+# random.seed(10)
+
 class Block:
 
     def __init__(self, hash_prev, hash_root):

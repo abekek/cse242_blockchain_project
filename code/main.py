@@ -29,6 +29,7 @@ def handle_filecontent(file_content):
         block.hash_header = block.header.hash()
         blocks.append(block)
     else:
+        print(len(blocks[-1].hash_header))
         block = Block(blocks[-1].hash_header, merkle_tree)
         block.header.set_nonce()
         block.hash_header = block.header.hash()
@@ -118,3 +119,8 @@ print(validation.validate_blockchain())
 # print out the traversed tree for first block
 # print(blocks[0].header.hash_root.traverse_tree())
 
+# print(blocks[0].get_hash())
+# print(blocks[0].hash_header)
+# print(blocks[1].header.hash_prev)
+# print(blocks[7].hash_header)
+# print(len(blocks[7].hash_header))
