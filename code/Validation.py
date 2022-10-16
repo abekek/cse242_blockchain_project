@@ -76,8 +76,7 @@ class Validate:
         ## Check for hash of block before
         if index != 0:
             if block.header.hash_prev != blocks[index-1].hash_header:
-                # print(block.header.hash_prev)
-                # print(blocks[index-1].hash_header)
+                print("Invalid block: "+str(index+1))
                 return False
         block_content = block.print(True)
         start = 'END HEADER\n'
@@ -85,17 +84,16 @@ class Validate:
         transaction = (block_content.split(start))[1].split(end)[0]
         file_content = [line.split() for line in transaction.splitlines()]
         file_content.reverse()
-        # print(file_content)
+        ## Rebuild the tree
         merkle_tree = MerkleTree(file_content)
         ## Check that transactions in the block make the merkle tree passed in the block
         if merkle_tree.get_root() != block.header.hash_root.get_root():
-            # print(index)
-            # print(merkle_tree.get_root())
-            # print(block.header.hash_root.get_root())
+            print("Invalid block: "+str(index+1))
             return False
         hash_of_block_header = block.header.hash()
         ## Check hash of the block header is correct
         if hash_of_block_header != block.hash_header:
+            print("Invalid block: "+str(index+1))
             return False
         return True
         

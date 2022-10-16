@@ -105,8 +105,15 @@ for i in range(len(blocks)):
 num_bad_entities = 100
 validation = Validate(blocks, num_bad_entities)
 
+print("Validating existing address...")
 print(validation.balance('de0acd701ed59eb60ccbf38de33a2f5f91e6cde0'))
-print('Good blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
+print("Validation complete\n")
 
+print("Validating correct blockchain...")
+print('Good blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
+print("Validation complete\n")
+
+print("Validating bad blockchain...")
 bad_blocks = validation.bad_blocks
 print('Bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
+print("Validation complete\n")
