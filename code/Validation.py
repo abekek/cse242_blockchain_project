@@ -67,7 +67,13 @@ class Validate:
         return -1, False
 
     # HW5: 2.2
-    def validate_block(self, block):
+    def validate_block(self, block, index, blocks):
+        ## Check for hash of block before
+        if index != 0:
+            prev_block_hash = hashlib.sha256((str(blocks[index-1].hash_prev) + str(blocks[index-1].header.hash_root.get_root())) + str(blocks[index-1].timestamp) + str(blocks[index-1].target) + 
+                    str(blocks[index-1].nonce)).encode('utf-8').hexdigest()
+            if block.header.hash_prev != prev_block_hash:
+                return False
         block_content = block.print(True)
         start = 'BEGIN BLOCK\n'
         end = 'END HEADER\n'
@@ -88,9 +94,9 @@ class Validate:
         if index == -1:
             return False
         if index == 0:
-            return self.validate_block(blocks[index])
+            return self.validate_block(blocks[index], index, blocks)
         else:
-            return self.validate_block(blocks[index]) and self.validate_recursively(self.blocks, index-1)
+            return self.validate_block(blocks[index], index, blocks) and self.validate_recursively(self.blocks, index-1)
 
     def validate_blockchain(self):
         return self.validate_recursively(self.blocks, len(self.blocks)-1)
