@@ -1,8 +1,8 @@
 from MerkleTree import MerkleTree
 from Block import Block
-import hashlib
 import random
 import string
+import re
 
 class Validate:
     def __init__(self, blocks, num_bad_entities):
@@ -70,27 +70,20 @@ class Validate:
     def __validate_block(self, block, index, blocks):
         ## Check for hash of block before
         if index != 0:
-            prev_block_hash = blocks[index-1].header.hash()
-            if block.header.hash_prev != prev_block_hash:
-                print(block.header.hash_prev)
-                print(blocks[index-1].hash_header)
-                print(prev_block_hash)
+            if block.header.hash_prev != blocks[index-1].hash_header:
+                print(index)
                 return False
         block_content = block.print(True)
-        start = 'BEGIN BLOCK\n'
-        end = 'END HEADER\n'
-        transaction = "".join(block_content[len(start):-len(end)])
+        start = 'END HEADER\n'
+        end = 'END BLOCK\n\n'
+        transaction = (block_content.split(start))[1].split(end)[0]
         file_content = [line.split() for line in transaction.splitlines()]
+        file_content.reverse()
         merkle_tree = MerkleTree(file_content)
         ## Check that transactions in the block make the merkle tree passed in the block
         if merkle_tree.get_root() != block.header.hash_root.get_root():
             return False
-        hash_of_block_header = hashlib.sha256((
-            str(block.header.hash_prev) +
-            str(merkle_tree.get_root()) +
-            str(block.header.timestamp) +
-            str(block.header.target) + 
-            str(block.header.nonce)).encode('utf-8')).hexdigest()
+        hash_of_block_header = block.header.hash()
         ## Check hash of the block header is correct
         if hash_of_block_header != block.hash_header:
             return False
