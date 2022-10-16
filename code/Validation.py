@@ -68,8 +68,8 @@ class Validate:
 
     def balance(self, key_address):
         if key_address in self.addresses:
-            return self.addresses[key_address][1], True
-        return -1, False
+            return self.addresses[key_address][1], True, self.membership_proof(key_address)
+        return -1, False, None
 
     # HW5: 2.2
     def __validate_block(self, block, index, blocks):
@@ -107,3 +107,14 @@ class Validate:
 
     def validate_blockchain(self, blocks):
         return self.__validate_recursively(blocks, len(blocks)-1)
+
+    # HW5: 2.5
+    def membership_proof(self, key_address):
+        block = self.blocks[self.addresses[key_address][0]]
+        leaves = block.header.hash_root.traverse_tree()
+        for leaf in leaves:
+            if leaf.address == key_address:
+                pass
+                # return leaf.merkle_proof()
+
+    

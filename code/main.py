@@ -99,8 +99,12 @@ for fa in txt_files:
 os.chdir(os.getcwd())
 
 for i in range(len(blocks)):
-    # write to file 
-    with open(f'output/{filenames[i][:-4]}.block.out', 'w') as f:
+    # write to file
+    output_access = 'output'
+    if user_input == "1" or user_input == "2":
+        output_access = '../output'
+        
+    with open(f'{output_access}/{filenames[i][:-4]}.block.out', 'w') as f:
         f.write(blocks[i].print(True))
 
 # validation of the blockchain
