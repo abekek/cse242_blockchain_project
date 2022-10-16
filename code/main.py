@@ -113,6 +113,7 @@ for i in range(len(bad_blocks)):
         f.write(bad_blocks[i].print(True))
 
 print(validation.balance('de0acd701ed59eb60ccbf38de33a2f5f91e6cde0'))
+print(validation.validate_blockchain())
 
 # print out the traversed tree for first block
 # print(blocks[0].header.hash_root.traverse_tree())

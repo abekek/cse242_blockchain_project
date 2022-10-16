@@ -67,12 +67,14 @@ class Validate:
         return -1, False
 
     # HW5: 2.2
-    def validate_block(self, block, index, blocks):
+    def __validate_block(self, block, index, blocks):
         ## Check for hash of block before
         if index != 0:
-            prev_block_hash = hashlib.sha256((str(blocks[index-1].hash_prev) + str(blocks[index-1].header.hash_root.get_root())) + str(blocks[index-1].timestamp) + str(blocks[index-1].target) + 
-                    str(blocks[index-1].nonce)).encode('utf-8').hexdigest()
+            prev_block_hash = blocks[index-1].header.hash()
             if block.header.hash_prev != prev_block_hash:
+                print(block.header.hash_prev)
+                print(blocks[index-1].hash_header)
+                print(prev_block_hash)
                 return False
         block_content = block.print(True)
         start = 'BEGIN BLOCK\n'
@@ -83,20 +85,24 @@ class Validate:
         ## Check that transactions in the block make the merkle tree passed in the block
         if merkle_tree.get_root() != block.header.hash_root.get_root():
             return False
-        hash_of_block_header = hashlib.sha256((str(block.hash_prev) + str(merkle_tree.get_root())) + str(block.timestamp) + str(block.target) + 
-                    str(block.nonce)).encode('utf-8').hexdigest()
+        hash_of_block_header = hashlib.sha256((
+            str(block.header.hash_prev) +
+            str(merkle_tree.get_root()) +
+            str(block.header.timestamp) +
+            str(block.header.target) + 
+            str(block.header.nonce)).encode('utf-8')).hexdigest()
         ## Check hash of the block header is correct
         if hash_of_block_header != block.hash_header:
             return False
         return True
         
-    def validate_recursively(self, blocks, index):
+    def __validate_recursively(self, blocks, index):
         if index == -1:
             return False
         if index == 0:
-            return self.validate_block(blocks[index], index, blocks)
+            return self.__validate_block(blocks[index], index, blocks)
         else:
-            return self.validate_block(blocks[index], index, blocks) and self.validate_recursively(self.blocks, index-1)
+            return self.__validate_block(blocks[index], index, blocks) and self.__validate_recursively(self.blocks, index-1)
 
     def validate_blockchain(self):
-        return self.validate_recursively(self.blocks, len(self.blocks)-1)
+        return self.__validate_recursively(self.blocks, len(self.blocks)-1)
