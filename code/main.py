@@ -37,28 +37,12 @@ def handle_filecontent(file_content):
         blocks.append(block)
 
 print("Choose an option:")
-print("1. Input file names")
-print("2. Input folder name (all files in folder will be used)")
-print("3. Zip file")
+print("1. Input folder name (all files in folder will be used)")
+print("2. Zip file")
 
-user_input = input("Enter 1, 2 or 3: ")
+user_input = input("Enter 1 or 2: ")
 
 if user_input == "1":
-    # get all files in root directory
-    files = os.listdir(os.getcwd())
-
-    # Switch current directory to /code/ in the case that text files are in that directory (that's how we tested)
-    os.chdir(os.getcwd() + '/code')
-
-    # now search in the /code/ directory
-    files.extend(os.listdir(os.getcwd()))
-
-    # prompt user for file name
-    file_name = input('Enter file names separated by space (example: file1.txt file2.txt): ')
-    files_inputed = file_name.split(' ')
-    # get all files with .txt extension
-    txt_files = [file for file in files if file.endswith('.txt')]
-elif user_input == "2":
     # prompt user for folder name
     folder_name = input('Enter folder name: ')
     try:
@@ -71,7 +55,7 @@ elif user_input == "2":
     files_inputed = files
     # get all files with .txt extension
     txt_files = [file for file in files if file.endswith('.txt')]
-elif user_input == "3":
+elif user_input == "2":
     # handle zip file
     zipfile_name = input("Enter Zip file name (example: file.zip): ")
     file = zipfile.ZipFile(zipfile_name, "r")
@@ -102,7 +86,7 @@ os.chdir(os.getcwd())
 for i in range(len(blocks)):
     # write to file
     output_access = 'output'
-    if user_input == "1" or user_input == "2":
+    if user_input == "1":
         output_access = '../output'
         
     with open(f'{output_access}/{filenames[i][:-4]}.block.out', 'w') as f:
@@ -112,26 +96,23 @@ for i in range(len(blocks)):
 num_bad_entities = 100
 validation = Validate(blocks, num_bad_entities)
 
-existing_address = "de0acd701ed59eb60ccbf38de33a2f5f91e6cde0"
-print(f"Validating existing address = {existing_address} ...")
-val_res = validation.balance(existing_address)
+choosen_address = "de0acd701ed59eb60ccbf38de33a2f5f91e6cde0"
+print(f"\nValidating chosen address = {choosen_address} ...")
+val_res = validation.balance(choosen_address)
 print(f"Exists = {val_res[1]}, balance of existing address = {val_res[0]} ")
 print("Validation complete\n")
 
-# print(val_res[2])
+random_address = ''.join(random.choices(string.hexdigits, k=40)).lower()
+print(f"Validating random address = {random_address} ...")
+val_res = validation.balance(random_address)
+print(f"Exists = {val_res[1]}, balance of random address = {val_res[0]} ")
+print("Validation complete\n")
 
+print("Validating initially created blockchain...")
+print('Initially created blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
+print("Validation complete\n")
 
-# random_address = ''.join(random.choices(string.hexdigits, k=40)).lower()
-# print(f"Validating random address = {random_address} ...")
-# val_res = validation.balance(random_address)
-# print(f"Exists = {val_res[1]}, balance of random address = {val_res[0]} ")
-# print("Validation complete\n")
-
-# print("Validating initially created blockchain...")
-# print('Initially created blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
-# print("Validation complete\n")
-
-# print("Validating generated bad blockchain...")
-# bad_blocks = validation.bad_blocks
-# print('Generated bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
-# print("Validation complete\n")
+print("Validating generated bad blockchain...")
+bad_blocks = validation.bad_blocks
+print('Generated bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
+print("Validation complete\n")

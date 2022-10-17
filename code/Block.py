@@ -1,10 +1,6 @@
-# https://stackoverflow.com/questions/72411835/how-to-correctly-do-a-double-sha256-hashing
-
 from datetime import datetime
 import hashlib
 import random
-
-# random.seed(10)
 
 class Block:
 
@@ -41,7 +37,6 @@ class Block:
                     break
                 else:
                     curr_nonce = random.randint(0, 2**64)
-            # print(tries)
 
         def get_nonce(self):
             return self.nonce

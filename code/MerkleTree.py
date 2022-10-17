@@ -106,7 +106,7 @@ class MerkleTree:
         path.append(self.root)
         self.proof_of_membership_helper(self.root, solutions, path)
         for solution in solutions:
-            if solution[-1].address == address:
+            if solution[-1].address == address or solution[-2].address == address:
                 for s in reversed(solution):
                     solution_path.append(s.hash_value)
                 break
@@ -117,8 +117,8 @@ class MerkleTree:
             return
         current_path_copy = list(current_path)
         if node.left != None and node.right != None:
-            current_path_copy.append(node.left)
             current_path_copy.append(node.right)
+            current_path_copy.append(node.left)
             solutions.append(current_path_copy)
             self.proof_of_membership_helper(node.right, solutions, current_path_copy)
             self.proof_of_membership_helper(node.left, solutions, current_path_copy)

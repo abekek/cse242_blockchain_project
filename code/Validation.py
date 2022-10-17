@@ -20,7 +20,7 @@ class Validate:
 
         for i in range(len(self.blocks)):
             bad_blocks.append(copy.deepcopy(self.blocks[i]))
-
+        
         for _ in range(self.num_bad_entities):
             # choose a random block to make bad
             rnd_block_idx = random.randint(0, len(bad_blocks) - 1)
@@ -111,33 +111,63 @@ class Validate:
         return self.__validate_recursively(blocks, len(blocks)-1)
 
     # HW5: 2.5
-    # bottom-up traversal: https://stackoverflow.com/questions/42780279/bottom-up-tree-traversal-starting-from-a-particular-leaf
     def membership_proof(self, key_address):
         block = self.blocks[self.addresses[key_address][0]]
-        # starting from the root node, add the root node to the array
-        # children nodes are added to the array in the order of left, right
-        # then, the arrays diverge and the left and the right children of the left and right nodes are added to two different arrays
-        # the process continues until the leaf node is reached
-        # the array of the leaf node that contains the key address is the membership proof
-        # if the key address is not found, the mSembership proof fails
-        # the path to the leaf node is reversed so that the key address is at the beginning of the array
-        # the array is then returned with the root node at the end of the array
-        # the root node is the last element of the array because the array is reversed
-        
+    
         self.membership_proof_postorder(block.header.hash_root.root, [block.header.hash_root.root.hash_value], key_address)
-        self.membership_proof_arr.reverse()
+        self.membership_proof_arr.reverse()    
         
-        print('Proof of membership:')
-        print(self.membership_proof_arr)
+        print('\nProof of membership:')
+        
+        self.membership_proof_arr = self.proof_of_membership(key_address)
+        print("Path from data to the merkle tree root: " + str(self.membership_proof_arr))
 
-        curr = self.membership_proof_arr.pop(0)
-        while len(self.membership_proof_arr) > 0:
-            # pop the first element
-            first = self.membership_proof_arr.pop(0)
-            curr = hashlib.sha256((curr + first).encode('utf-8')).hexdigest()
+        res = ""
+        res+="BLOCK HEADER\n"
+        res+= 'Hash of the previous block: {}\n'.format(block.header.hash_prev)
+        res+= 'Merkle Tree root: {}\n'.format(block.header.hash_root.get_root())
+        res+= 'Timestamp: {}\n'.format(block.header.timestamp)
+        res+= 'Target: {}\n'.format(block.header.target)
+        res+= 'Nonce: {}\n'.format(block.header.nonce)
+        res+= "END HEADER\n"
+        print(res)
 
-        print(f"Root hash = {curr}")
-        print(f"Initial merkle tree hash = {block.header.hash_root.root.hash_value}")
+        to_recent = []
+        for i in range(self.addresses[key_address][0], len(self.blocks)):
+            to_recent.append(self.blocks[i].hash_header)
+
+        print("Path from the current block to the recent block: " + str(to_recent))
+        
+        path_len = len(self.membership_proof_arr)
+        if path_len % 2 == 0: # the number of nodes in the path is even aka only one leaf node
+            if hashlib.sha256((self.membership_proof_arr[0]).encode('utf-8')).hexdigest() == self.membership_proof_arr[1]:
+                for i in range(1, len(self.membership_proof_arr) - 2, 2):
+                    if(hashlib.sha256((self.membership_proof_arr[i] + self.membership_proof_arr[i+1]).encode('utf-8')).hexdigest() == self.membership_proof_arr[i+2]):
+                        pass
+                    elif(hashlib.sha256((self.membership_proof_arr[i] + self.membership_proof_arr[i+1]).encode('utf-8')).hexdigest() == self.membership_proof_arr[i+3]):
+                        pass
+                    else: # failed
+                        print("Membership proof failed")
+                        break
+            if(hashlib.sha256((self.membership_proof_arr[path_len - 3] + self.membership_proof_arr[path_len - 2]).encode('utf-8')).hexdigest() == self.membership_proof_arr[path_len - 1]):
+                print('Membership proof is valid')
+            else:
+                print("Membership proof failed")
+        else: 
+            for i in range(0,len(self.membership_proof_arr) - 2, 2):
+                if(hashlib.sha256((self.membership_proof_arr[i] + self.membership_proof_arr[i+1]).encode('utf-8')).hexdigest() == self.membership_proof_arr[i+2]):
+                    # print("True")
+                    pass
+                elif(hashlib.sha256((self.membership_proof_arr[i] + self.membership_proof_arr[i+1]).encode('utf-8')).hexdigest() == self.membership_proof_arr[i+3]):
+                    # print("True")
+                    pass
+                else: # failed
+                    print("Membership proof failed")
+                    break
+            if(hashlib.sha256((self.membership_proof_arr[path_len - 3] + self.membership_proof_arr[path_len - 2]).encode('utf-8')).hexdigest() == self.membership_proof_arr[path_len - 1]):
+                print('Membership proof is valid')
+            else: 
+                print("Membership proof failed")
     
     # root is a parent node
     # path is the array that contains the path to the root node
@@ -146,12 +176,8 @@ class Validate:
             return
         else: 
             if root.address == key_address:
-                print("Found key address: " + key_address)
-                print(root.address)
-                print(root.hash_value)
-                # print(path)
                 self.membership_proof_arr = path
-                return path
+                return path # None
             newPath = path.copy()
             # add left and right children to the array if they exist
             if root.left != None:
@@ -162,6 +188,13 @@ class Validate:
             self.membership_proof_postorder(root.left, newPath, key_address)
             self.membership_proof_postorder(root.right, newPath, key_address)
 
+    def proof_of_membership(self, key_address):
+        if key_address in self.addresses:
+            block = self.blocks[self.addresses[key_address][0]]
+            path = block.header.hash_root.proof_of_membership(key_address)
+            return path
+        else:
+            return []
         
 
     
