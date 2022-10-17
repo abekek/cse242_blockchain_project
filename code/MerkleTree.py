@@ -99,6 +99,38 @@ class MerkleTree:
         self.postorder_traverse_tree_helper(node.left, l, only_leaves)
         self.postorder_traverse_tree_helper(node.right, l, only_leaves)
 
+    def proof_of_membership(self, address):
+        solution_path = []
+        solutions = []
+        path = []
+        path.append(self.root)
+        self.proof_of_membership_helper(self.root, solutions, path)
+        for solution in solutions:
+            if solution[-1].address == address:
+                for s in reversed(solution):
+                    solution_path.append(s.hash_value)
+                break
+        return solution_path
+    
+    def proof_of_membership_helper(self, node, solutions, current_path):
+        if node == None or (node.left == None and node.right == None):
+            return
+        current_path_copy = list(current_path)
+        if node.left != None and node.right != None:
+            current_path_copy.append(node.left)
+            current_path_copy.append(node.right)
+            solutions.append(current_path_copy)
+            self.proof_of_membership_helper(node.right, solutions, current_path_copy)
+            self.proof_of_membership_helper(node.left, solutions, current_path_copy)
+        elif node.left != None:
+            current_path_copy.append(node.left)
+            solutions.append(current_path_copy)
+            self.proof_of_membership_helper(node.left, solutions, current_path_copy)
+        elif node.right != None:
+            current_path_copy.append(node.right)
+            solutions.append(current_path_copy)
+            self.proof_of_membership_helper(node.right, solutions, current_path_copy)
+
     def getStr(self, node):
         if node.address != None:
             return str(node.address) + " " + str(node.balance) + "\n"
