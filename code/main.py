@@ -4,6 +4,7 @@ import zipfile
 import glob
 import random
 import string
+import hashlib
 
 from MerkleTree import MerkleTree
 from Block import Block
@@ -117,17 +118,20 @@ val_res = validation.balance(existing_address)
 print(f"Exists = {val_res[1]}, balance of existing address = {val_res[0]} ")
 print("Validation complete\n")
 
-random_address = ''.join(random.choices(string.hexdigits, k=40)).lower()
-print(f"Validating random address = {random_address} ...")
-val_res = validation.balance(random_address)
-print(f"Exists = {val_res[1]}, balance of random address = {val_res[0]} ")
-print("Validation complete\n")
+# print(val_res[2])
 
-print("Validating initially created blockchain...")
-print('Initially created blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
-print("Validation complete\n")
 
-print("Validating generated bad blockchain...")
-bad_blocks = validation.bad_blocks
-print('Generated bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
-print("Validation complete\n")
+# random_address = ''.join(random.choices(string.hexdigits, k=40)).lower()
+# print(f"Validating random address = {random_address} ...")
+# val_res = validation.balance(random_address)
+# print(f"Exists = {val_res[1]}, balance of random address = {val_res[0]} ")
+# print("Validation complete\n")
+
+# print("Validating initially created blockchain...")
+# print('Initially created blockchain is valid? ' + str(validation.validate_blockchain(blocks)))
+# print("Validation complete\n")
+
+# print("Validating generated bad blockchain...")
+# bad_blocks = validation.bad_blocks
+# print('Generated bad blockchain is valid? ' + str(validation.validate_blockchain(bad_blocks)))
+# print("Validation complete\n")

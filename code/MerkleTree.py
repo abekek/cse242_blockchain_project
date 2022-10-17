@@ -67,18 +67,37 @@ class MerkleTree:
             return ""
         return self.print_helper(node.right, level + 1, res) + self.getStr(node) + self.print_helper(node.left, level + 1, res)
         
-    def traverse_tree(self):
+    def inorder_traverse_tree(self, only_leaves = True):
         l = []
-        self.traverse_tree_helper(self.root, l)
+        self.inorder_traverse_tree_helper(self.root, l, only_leaves)
         return l
     
-    def traverse_tree_helper(self, node, l):
+    def inorder_traverse_tree_helper(self, node, l, only_leaves):
         if node == None:
             return
-        self.traverse_tree_helper(node.left, l)
-        if node.balance != None:
+        self.inorder_traverse_tree_helper(node.left, l, only_leaves)
+        if only_leaves:
+            if node.balance != None:
+                l.append(node)
+        else:
             l.append(node)
-        self.traverse_tree_helper(node.right, l)
+        self.inorder_traverse_tree_helper(node.right, l, only_leaves)
+
+    def postorder_traverse_tree(self, only_leaves = True):
+        l = []
+        self.postorder_traverse_tree_helper(self.root, l, only_leaves)
+        return l
+
+    def postorder_traverse_tree_helper(self, node, l, only_leaves):
+        if node == None:
+            return
+        if only_leaves:
+            if node.balance != None:
+                l.append(node)
+        else:
+            l.append(node)
+        self.postorder_traverse_tree_helper(node.left, l, only_leaves)
+        self.postorder_traverse_tree_helper(node.right, l, only_leaves)
 
     def getStr(self, node):
         if node.address != None:

@@ -4,6 +4,7 @@ import random
 import string
 import re
 import copy
+import hashlib
 
 class Validate:
     def __init__(self, blocks, num_bad_entities):
@@ -11,6 +12,7 @@ class Validate:
         self.num_bad_entities = num_bad_entities
         self.bad_blocks = self.generate_bad_blocks()
         self.addresses = self.save_addresses()
+        self.membership_proof_arr = []
 
     # HW 5: 2.3
     def generate_bad_blocks(self):
@@ -61,7 +63,7 @@ class Validate:
         addresses = {}
         # traverse the blockchain and save all the addresses
         for i, block in enumerate(self.blocks):
-            leaves = block.header.hash_root.traverse_tree()
+            leaves = block.header.hash_root.inorder_traverse_tree()
             for leaf in leaves:
                 addresses[leaf.address] = (i, int(leaf.balance))
         return addresses
@@ -109,12 +111,57 @@ class Validate:
         return self.__validate_recursively(blocks, len(blocks)-1)
 
     # HW5: 2.5
+    # bottom-up traversal: https://stackoverflow.com/questions/42780279/bottom-up-tree-traversal-starting-from-a-particular-leaf
     def membership_proof(self, key_address):
         block = self.blocks[self.addresses[key_address][0]]
-        leaves = block.header.hash_root.traverse_tree()
-        for leaf in leaves:
-            if leaf.address == key_address:
-                pass
-                # return leaf.merkle_proof()
+        # starting from the root node, add the root node to the array
+        # children nodes are added to the array in the order of left, right
+        # then, the arrays diverge and the left and the right children of the left and right nodes are added to two different arrays
+        # the process continues until the leaf node is reached
+        # the array of the leaf node that contains the key address is the membership proof
+        # if the key address is not found, the mSembership proof fails
+        # the path to the leaf node is reversed so that the key address is at the beginning of the array
+        # the array is then returned with the root node at the end of the array
+        # the root node is the last element of the array because the array is reversed
+        
+        self.membership_proof_postorder(block.header.hash_root.root, [block.header.hash_root.root.hash_value], key_address)
+        self.membership_proof_arr.reverse()
+        
+        print('Proof of membership:')
+        print(self.membership_proof_arr)
+
+        curr = self.membership_proof_arr.pop(0)
+        while len(self.membership_proof_arr) > 0:
+            # pop the first element
+            first = self.membership_proof_arr.pop(0)
+            curr = hashlib.sha256((curr + first).encode('utf-8')).hexdigest()
+
+        print(f"Root hash = {curr}")
+        print(f"Initial merkle tree hash = {block.header.hash_root.root.hash_value}")
+    
+    # root is a parent node
+    # path is the array that contains the path to the root node
+    def membership_proof_postorder(self, root, path, key_address):
+        if root == None:
+            return
+        else: 
+            if root.address == key_address:
+                print("Found key address: " + key_address)
+                print(root.address)
+                print(root.hash_value)
+                # print(path)
+                self.membership_proof_arr = path
+                return path
+            newPath = path.copy()
+            # add left and right children to the array if they exist
+            if root.left != None:
+                newPath.append(root.left.hash_value)
+            if root.right != None:
+                newPath.append(root.right.hash_value)
+            # call the function recursively on the left and right children
+            self.membership_proof_postorder(root.left, newPath, key_address)
+            self.membership_proof_postorder(root.right, newPath, key_address)
+
+        
 
     
